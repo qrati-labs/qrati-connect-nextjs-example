@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Qrati Connect — Next.js Example
 
-## Getting Started
+Embed a real-time event discovery widget in any **Next.js** application using [Qrati Connect](https://www.npmjs.com/package/@qratilabs/qrati-connect) as a Web Component.
 
-First, run the development server:
+## Quick Start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the widget in action.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How It Works
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Organisation ID constant
+
+All examples share a single constant so you can swap in your real org ID in one place:
+
+```ts
+// app/config.ts
+export const EXAMPLE_ORG_ID = 'YOUR_ORGANIZATION_ID';
+```
+
+### 2. Client component wrapper
+
+Because Web Components rely on browser APIs, the widget is loaded inside a `'use client'` component that dynamically adds the CDN script:
+
+```tsx
+// app/QratiWidget.tsx
+'use client';
+
+import { useEffect } from 'react';
+import { EXAMPLE_ORG_ID } from './config';
+
+export default function QratiWidget() {
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src =
+      'https://cdn.jsdelivr.net/npm/@qratilabs/qrati-connect@latest/element/web.es.js';
+    document.head.appendChild(script);
+    return () => { script.remove(); };
+  }, []);
+
+  return (
+    <qrati-connect
+      organization-id={EXAMPLE_ORG_ID}
+      theme="light"
+      router="hash"
+    />
+  );
+}
+```
+
+### 3. Render on the home page
+
+Import the client component into your Server Component page — no additional configuration needed:
+
+```tsx
+// app/page.tsx
+import QratiWidget from './QratiWidget';
+
+export default function Home() {
+  return <QratiWidget />;
+}
+```
+
+> **Tip:** You can also use `next/dynamic` with `ssr: false` if you prefer lazy-loading the widget.
+
+## Available Attributes
+
+| Attribute           | Type     | Default    | Description                           |
+| ------------------- | -------- | ---------- | ------------------------------------- |
+| `organization-id`   | `string` | —          | **Required.** Your Qrati org ID.      |
+| `theme`             | `string` | `"light"`  | `"light"` or `"dark"`.                |
+| `router`            | `string` | `"memory"` | `"memory"` or `"hash"`.              |
+| `uid`               | `string` | —          | Optional authenticated user ID.       |
+| `fname`             | `string` | —          | Optional user first name.             |
+| `lname`             | `string` | —          | Optional user last name.              |
+
+## Tech Stack
+
+- **Next.js 16** — App Router, React Server Components
+- **React 19** — concurrent rendering
+- **TypeScript 5** — strict type checking
+- **Tailwind CSS 4** — utility-first styles
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+- [Qrati Connect on npm](https://www.npmjs.com/package/@qratilabs/qrati-connect)
+- [Qrati website](https://qrati.com)
+- [Next.js documentation](https://nextjs.org/docs)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Open it in
 
-## Deploy on Vercel
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/qrati-labs/qrati-connect-nextjs-example)
+[![Open in CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/qrati-labs/qrati-connect-nextjs-example)
+[![Open in VS Code](https://img.shields.io/badge/Open_in-VS_Code-blue?logo=visualstudiocode)](https://vscode.dev/github/qrati-labs/qrati-connect-nextjs-example)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### About Qrati
+
+**Qrati** helps communities discover and share events effortlessly. Qrati Connect lets any website embed a beautiful, fully-featured event discovery widget in minutes — no back-end required. Bring the power of community events to your platform and delight your users with a seamless browsing experience.
