@@ -1,7 +1,6 @@
 'use client';
 
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
-import { useEffect } from 'react';
 
 
 type QratiConnectAttributes = DetailedHTMLProps<
@@ -26,15 +25,5 @@ declare module 'react' {
 }
 
 export default function QratiWidget() {
-    useEffect(() => {
-        const script = document.createElement('script');
-        script.type = 'module';
-        script.src = process.env.NEXT_APP_CDN_URL || '';
-        document.head.appendChild(script);
-        return () => {
-            document.head.removeChild(script);
-        };
-    }, []);
-
-    return <qrati-connect organization-id={process.env.NEXT_APP_ORGANIZATION_ID} theme='light' router='hash' />;
+    return <qrati-connect organization-id={process.env.NEXT_PUBLIC_ORGANIZATION_ID} theme='light' router='hash' />;
 }

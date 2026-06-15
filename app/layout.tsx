@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from 'next/font/google';
+import Script from 'next/script';
 
 import './globals.css';
 
@@ -26,7 +27,10 @@ export default function RootLayout({
 }>) {
     return (
         <html lang='en'>
-            <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+            <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+                {children}
+                <Script type='module' src={process.env.NEXT_PUBLIC_CDN_URL} strategy='afterInteractive' />
+            </body>
         </html>
     );
 }
