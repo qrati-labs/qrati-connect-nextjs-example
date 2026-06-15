@@ -17,16 +17,6 @@ export default function Home() {
         document.documentElement.setAttribute('data-theme', theme);
     }, [theme]);
 
-    useEffect(() => {
-        const script = document.createElement('script');
-        script.type = 'module';
-        script.src = process.env.NEXT_APP_CDN_URL || '';
-        document.head.appendChild(script);
-        return () => {
-            document.head.removeChild(script);
-        };
-    }, []);
-
     return (
         <div className="app">
     <button

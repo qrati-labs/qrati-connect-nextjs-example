@@ -3,7 +3,6 @@
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 import { useEffect } from 'react';
 
-import { EXAMPLE_ORG_ID, QRATI_SCRIPT_URL } from './config';
 
 type QratiConnectAttributes = DetailedHTMLProps<
     HTMLAttributes<HTMLElement> & {
@@ -30,12 +29,12 @@ export default function QratiWidget() {
     useEffect(() => {
         const script = document.createElement('script');
         script.type = 'module';
-        script.src = QRATI_SCRIPT_URL;
+        script.src = process.env.NEXT_APP_CDN_URL || '';
         document.head.appendChild(script);
         return () => {
             document.head.removeChild(script);
         };
     }, []);
 
-    return <qrati-connect organization-id={EXAMPLE_ORG_ID} theme='light' router='hash' />;
+    return <qrati-connect organization-id={process.env.NEXT_APP_ORGANIZATION_ID} theme='light' router='hash' />;
 }
