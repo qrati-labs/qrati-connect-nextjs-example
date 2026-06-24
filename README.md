@@ -1,107 +1,46 @@
 # Qrati Connect — Next.js Example
 
-Embed a real-time event discovery widget in any **Next.js** application using [Qrati Connect](https://www.npmjs.com/package/@qratilabs/qrati-connect) as a Web Component.
+Embeds [Qrati Connect](https://qrati.com) into a Next.js (App Router) app using
+the native **React component**, with a host-controlled light/dark theme and a
+demo login for organizations that use custom auth.
 
-## Quick Start
+## Integration method: React component
+
+The widget is rendered inside a client component (`app/page.tsx`):
+
+```tsx
+'use client';
+import QratiConnect from '@qratilabs/qrati-connect';
+
+<QratiConnect organizationId={ORGANIZATION_ID} uid={user.userId} theme={theme} router="hash" />
+```
+
+It only mounts after a user signs in, so it never runs during SSR.
+
+## Run it
 
 ```bash
-npm install
-npm run dev
+bun install
+cp .env.example .env   # optional — sensible defaults are baked in
+bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the widget in action.
+## Configuration
 
-## How It Works
+| Variable                       | Description                                                       |
+| ------------------------------ | ----------------------------------------------------------------- |
+| `NEXT_PUBLIC_ORGANIZATION_ID`  | Your Qrati organization ID                                        |
+| `NEXT_PUBLIC_API_ENDPOINT`     | Demo-login endpoint for custom-auth orgs. Leave empty to skip it. |
 
-### 1. Organisation ID constant
+## Demo auth
 
-All examples share a single constant so you can swap in your real org ID in one place:
+Orgs with custom auth expect a known user. The login form (`app/auth.ts`) derives
+a stable `uid` from the email, optionally POSTs to `NEXT_PUBLIC_API_ENDPOINT`,
+then renders the widget with `uid` / `fname` / `lname` so the user is recognized.
 
-```ts
-// app/config.ts
-export const EXAMPLE_ORG_ID = 'YOUR_ORGANIZATION_ID';
-```
+## Other integration methods
 
-### 2. Client component wrapper
+- **Web component** — `<qrati-connect>` from the CDN (see the Svelte / Solid / Qwik / Lit examples).
+- **Embed (no-code)** — single `<script>` tag with `data-*` attributes (see the Vanilla JS / Marko / Ember examples).
 
-Because Web Components rely on browser APIs, the widget is loaded inside a `'use client'` component that dynamically adds the CDN script:
-
-```tsx
-// app/QratiWidget.tsx
-'use client';
-
-import { useEffect } from 'react';
-import { EXAMPLE_ORG_ID } from './config';
-
-export default function QratiWidget() {
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.type = 'module';
-    script.src =
-      'https://cdn.jsdelivr.net/npm/@qratilabs/qrati-connect@latest/element/web.es.js';
-    document.head.appendChild(script);
-    return () => { script.remove(); };
-  }, []);
-
-  return (
-    <qrati-connect
-      organization-id={EXAMPLE_ORG_ID}
-      theme="light"
-      router="hash"
-    />
-  );
-}
-```
-
-### 3. Render on the home page
-
-Import the client component into your Server Component page — no additional configuration needed:
-
-```tsx
-// app/page.tsx
-import QratiWidget from './QratiWidget';
-
-export default function Home() {
-  return <QratiWidget />;
-}
-```
-
-> **Tip:** You can also use `next/dynamic` with `ssr: false` if you prefer lazy-loading the widget.
-
-## Available Attributes
-
-| Attribute           | Type     | Default    | Description                           |
-| ------------------- | -------- | ---------- | ------------------------------------- |
-| `organization-id`   | `string` | —          | **Required.** Your Qrati org ID.      |
-| `theme`             | `string` | `"light"`  | `"light"` or `"dark"`.                |
-| `router`            | `string` | `"memory"` | `"memory"` or `"hash"`.              |
-| `uid`               | `string` | —          | Optional authenticated user ID.       |
-| `fname`             | `string` | —          | Optional user first name.             |
-| `lname`             | `string` | —          | Optional user last name.              |
-
-## Tech Stack
-
-- **Next.js 16** — App Router, React Server Components
-- **React 19** — concurrent rendering
-- **TypeScript 5** — strict type checking
-- **Tailwind CSS 4** — utility-first styles
-
-## Learn More
-
-- [Qrati Connect on npm](https://www.npmjs.com/package/@qratilabs/qrati-connect)
-- [Qrati website](https://qrati.com)
-- [Next.js documentation](https://nextjs.org/docs)
-
----
-
-### Open it in
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/qrati-labs/qrati-connect-nextjs-example)
-[![Open in CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/qrati-labs/qrati-connect-nextjs-example)
-[![Open in VS Code](https://img.shields.io/badge/Open_in-VS_Code-blue?logo=visualstudiocode)](https://vscode.dev/github/qrati-labs/qrati-connect-nextjs-example)
-
----
-
-### About Qrati
-
-**Qrati** helps communities discover and share events effortlessly. Qrati Connect lets any website embed a beautiful, fully-featured event discovery widget in minutes — no back-end required. Bring the power of community events to your platform and delight your users with a seamless browsing experience.
+Docs: <https://www.npmjs.com/package/@qratilabs/qrati-connect>
