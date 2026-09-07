@@ -316,67 +316,86 @@ export function EventGallery() {
             {/* Event Hosting & Integration CTA Section */}
             <section className="seo-section seo-cta-section" aria-labelledby="cta-heading">
               <div className="seo-cta-card">
-                <span className="seo-kicker">Host Your Event Today</span>
-                <h2 id="cta-heading">Ready to Embed Live Photos in Your Application?</h2>
-                <p>
-                  Create an account on Qrati, set up your event or organization, and start collecting
-                  stunning live photos from attendees with simple drop-in code.
-                </p>
-                <div className="seo-cta-buttons">
-                  <a
-                    href="https://qrati.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="seo-btn-primary"
-                  >
-                    <span>Get Started Free on Qrati</span>
-                    <span aria-hidden="true">→</span>
-                  </a>
-                  <a
-                    href={npmUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="seo-btn-secondary"
-                  >
-                    <span>Read SDK Documentation</span>
-                  </a>
+                <div className="seo-cta-content">
+                  <span className="seo-kicker">Host on Qrati &middot; Embed Anywhere</span>
+                  <h2 id="cta-heading">
+                    Host Your Event on Qrati.{' '}
+                    <span className="cta-highlight">Stream the Live Gallery on Your Website.</span>
+                  </h2>
+                  <p className="seo-cta-copy">
+                    Planning a conference, festival, wedding, summit, or private celebration?
+                    Host your event on Qrati to capture every attendee memory with instant QR uploads,
+                    built-in moderation, and live photo contests. Then drop Qrati Connect into your own
+                    website so visitors and guests engage in real time directly on your domain.
+                  </p>
+
+                  <div className="seo-cta-steps" aria-label="How it works">
+                    <div className="cta-step">
+                      <span className="cta-step-num">1</span>
+                      <div>
+                        <strong>Host on Qrati</strong>
+                        <p>Create your event space on Qrati with QR codes, upload permissions, and branding.</p>
+                      </div>
+                    </div>
+                    <div className="cta-step">
+                      <span className="cta-step-num">2</span>
+                      <div>
+                        <strong>Connect to Your Site</strong>
+                        <p>Embed the React component or script tag into your existing website in minutes.</p>
+                      </div>
+                    </div>
+                    <div className="cta-step">
+                      <span className="cta-step-num">3</span>
+                      <div>
+                        <strong>Engage Your Community</strong>
+                        <p>Watch guest photos, reactions, and contest leaderboards sync live on your domain.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="seo-cta-actions">
+                    <a
+                      href="https://qrati.com/contact-us"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-cta-primary"
+                    >
+                      <span>Contact Us</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="currentColor" d="M14 5l7 7m0 0l-7 7m7-7H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </a>
+                  </div>
                 </div>
               </div>
             </section>
           </main>
 
           <footer className="footer">
-            <p>
-              Powered by{' '}
-              <a href="https://qrati.com" target="_blank" rel="noopener noreferrer">
-                Qrati
-              </a>{' '}
-              · Embeddable live event photo galleries for Next.js applications.
-            </p>
-            <div className="footer-links">
-              <a href="https://qrati.com/privacy" target="_blank" rel="noopener noreferrer">
-                Privacy Policy
-              </a>
-              <span className="footer-sep" aria-hidden="true">
-                ·
-              </span>
-              <a href="https://qrati.com/terms" target="_blank" rel="noopener noreferrer">
-                Terms of Service
-              </a>
-              <span className="footer-sep" aria-hidden="true">
-                ·
-              </span>
-              <button
-                type="button"
-                className="footer-cookie-btn"
-                onClick={handleCookiePreferences}
-              >
-                Cookie Preferences
-              </button>
+            <div className="footer-brand">
+              <img src="https://assets.qrati.com/images/qrati-connect-logo-square.png" alt="Qrati Connect logo" referrerPolicy="no-referrer" />
+              <div>
+                <span className="footer-title"><span>Qrati</span> Connect</span>
+                <p>Elevate your event experience.</p>
+              </div>
             </div>
-            <p className="footer-copyright">
-              © {year} Qrati Labs. All rights reserved.
-            </p>
+            <div className="footer-meta">
+              <nav aria-label="Footer navigation">
+                <a href="https://qrati.com" target="_blank" rel="noopener noreferrer">qrati.com</a>
+                <a href="https://www.npmjs.com/package/@qratilabs/qrati-connect" target="_blank" rel="noopener noreferrer">npm</a>
+                <a href={`https://github.com/${GITHUB_ORG}`} target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="https://qrati.com/pricing" target="_blank" rel="noopener noreferrer">Pricing</a>
+                <button
+                  type="button"
+                  className="footer-cookie-btn"
+                  data-cc="show-preferencesModal"
+                  onClick={handleCookiePreferences}
+                >
+                  Cookie Preferences
+                </button>
+              </nav>
+              <p className="footer-note">© {year} Qrati Labs. All rights reserved.</p>
+            </div>
           </footer>
         </div>
       </div>

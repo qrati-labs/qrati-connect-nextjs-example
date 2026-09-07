@@ -202,6 +202,7 @@ body {
 .footer-brand img { width: auto; height: 2.25rem; }
 .footer-brand div { display: flex; flex-direction: column; gap: 0.25rem; }
 .footer-title { color: var(--footer-heading); font-size: 0.95rem; font-weight: 700; }
+.footer-title span { color: var(--brand-accent); }
 .footer-brand p, .footer-note, .footer a { color: var(--footer-muted); }
 .footer-brand p, .footer-note { margin: 0; font-size: 0.78rem; }
 .footer-meta { display: flex; flex-direction: column; align-items: center; gap: 0.55rem; }
