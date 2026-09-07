@@ -1,6 +1,10 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import { GoogleTagManager } from '@next/third-parties/google';
 import CookieConsentBanner from './components/CookieConsentBanner';
+
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
+const GTM_ENABLED = Boolean(GTM_ID && GTM_ID !== '__GTM_ID__');
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://qrati.com'),
@@ -236,7 +240,19 @@ export default function RootLayout({
             })();`,
           }}
         />
+        {/* Consent Mode v2 defaults must be pushed before the GTM/gtag script parses below. */}
+        {GTM_ENABLED && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html:
+                'window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}' +
+                "gtag('consent','default',{ad_storage:'granted',analytics_storage:'granted',ad_user_data:'granted',ad_personalization:'granted'});" +
+                "gtag('consent','default',{ad_storage:'denied',analytics_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',region:['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','IS','LI','NO','GB','CH'],wait_for_update:500});",
+            }}
+          />
+        )}
       </head>
+      {GTM_ENABLED && <GoogleTagManager gtmId={GTM_ID as string} />}
       <body>
         {children}
         <CookieConsentBanner />
