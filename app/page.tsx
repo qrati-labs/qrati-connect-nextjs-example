@@ -1,9 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import dynamic from 'next/dynamic';
 import { ORGANIZATION_ID, GITHUB_ORG, REPO } from './config';
 import { showCookiePreferences } from './lib/cookieConsent';
+import {
+  subscribeAuth,
+  getAuthSnapshot,
+  getServerSnapshot,
+  login,
+  logout,
+} from './lib/auth';
 
 const QratiConnect = dynamic(() => import('@qratilabs/qrati-connect'), {
   ssr: false,
@@ -25,6 +32,11 @@ function initTheme(): 'light' | 'dark' {
 
 export default function Home() {
   const [theme, setTheme] = useState<'light' | 'dark'>(initTheme);
+  const user = useSyncExternalStore(subscribeAuth, getAuthSnapshot, getServerSnapshot);
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -36,6 +48,29 @@ export default function Home() {
     setTheme(next);
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('qc-theme', next);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || !name.trim()) {
+      setError('Email and name are required.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      await login(email.trim(), name.trim());
+    } catch {
+      setError('Login failed. Try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    setEmail('');
+    setName('');
   };
 
   return (
@@ -60,8 +95,9 @@ export default function Home() {
             </h1>
             <p className="hero-copy">
               A drop-in React component for Next.js to embed live event photo galleries with guest
-              uploads, full-screen lightbox, emoji reactions, and contest leaderboards. Controlled host
-              theme, clean link-outs, and zero backend configuration.
+              uploads, full-screen lightbox, emoji reactions, and contest leaderboards. This example
+              showcases <strong>custom host auth</strong> with a thin login layer and{' '}
+              <strong>custom storage</strong> (direct browser-to-bucket S3/R2 uploads with bucket CORS).
             </p>
 
             <div className="action-pills" aria-label="Example links">
@@ -111,10 +147,64 @@ export default function Home() {
           </header>
 
           <main className="content-shell">
-            <section className="widget-frame" aria-label="Interactive Next.js Event Gallery">
-              <h2 className="sr-only">Live Event Photo Gallery Component</h2>
-              <QratiConnect organizationId={ORGANIZATION_ID} theme={theme} router="hash" />
-            </section>
+            {user ? (
+              <>
+                <div className="session-bar">
+                  <span>
+                    Signed in as <strong>{user.fname} {user.lname}</strong> ({user.email})
+                  </span>
+                  <button className="btn-ghost" onClick={handleLogout}>
+                    Log out
+                  </button>
+                </div>
+                <section className="widget-frame" aria-label="Interactive Next.js Event Gallery">
+                  <h2 className="sr-only">Live Event Photo Gallery Component</h2>
+                  <QratiConnect
+                    organizationId={ORGANIZATION_ID}
+                    uid={user.userId}
+                    fname={user.fname}
+                    lname={user.lname}
+                    theme={theme}
+                    router="hash"
+                  />
+                </section>
+              </>
+            ) : (
+              <div className="login-card">
+                <h2>Demo sign in</h2>
+                <p className="sub">
+                  Identify yourself to test custom host authentication with a dedicated user ID.
+                </p>
+                <form className="login-form" onSubmit={handleSubmit}>
+                  <div className="field">
+                    <label htmlFor="name">Full name</label>
+                    <input
+                      id="name"
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="John Doe"
+                      autoComplete="name"
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="email">Email</label>
+                    <input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="john@example.com"
+                      autoComplete="email"
+                    />
+                  </div>
+                  {error && <p className="error">{error}</p>}
+                  <button className="btn-primary" type="submit" disabled={loading}>
+                    {loading ? 'Signing in…' : 'Sign in & load gallery'}
+                  </button>
+                </form>
+              </div>
+            )}
 
             {/* SEO Features Section */}
             <section className="seo-section" aria-labelledby="features-heading">
@@ -136,6 +226,26 @@ export default function Home() {
                   <p>
                     Responsive masonry grid layout, blurhash loading placeholders, and full-screen
                     lightbox with keyboard navigation for stunning visual presentation.
+                  </p>
+                </article>
+
+                <article className="seo-feature-card">
+                  <div className="seo-feature-icon" aria-hidden="true">
+                    🔐
+                  </div>
+                  <h3>Custom Host Auth</h3>
+                  <p>
+                    Pass host-authenticated attendee profiles directly using <code style={{ color: 'var(--brand-accent)' }}>uid</code>, <code style={{ color: 'var(--brand-accent)' }}>fname</code>, and <code style={{ color: 'var(--brand-accent)' }}>lname</code> props without third-party redirects.
+                  </p>
+                </article>
+
+                <article className="seo-feature-card">
+                  <div className="seo-feature-icon" aria-hidden="true">
+                    ☁️
+                  </div>
+                  <h3>Custom Cloud Storage</h3>
+                  <p>
+                    Connect your own AWS S3 or Cloudflare R2 bucket. Guest uploads stream directly from the browser to your bucket via presigned PUT URLs with configured CORS.
                   </p>
                 </article>
 
@@ -203,13 +313,16 @@ export default function Home() {
 // 2. Import component in your Next.js application
 import QratiConnect from '@qratilabs/qrati-connect';
 
-// 3. Render inside your page layout
-export function EventGallery() {
+// 3. Render inside your layout (pass uid, fname, lname for Custom Auth)
+export function EventGallery({ user }: { user?: { id: string; fname: string; lname: string } }) {
   return (
     <QratiConnect
       organizationId="your-organization-id"
-      theme="light" // 'light' | 'dark'
-      router="hash" // 'hash' | 'memory'
+      uid={user?.id}       // Host user ID for Custom Auth
+      fname={user?.fname}  // Attendee first name
+      lname={user?.lname}  // Attendee last name
+      theme="light"        // 'light' | 'dark'
+      router="hash"        // 'hash' | 'memory'
     />
   );
 }`}
@@ -238,6 +351,30 @@ export function EventGallery() {
                   </summary>
                   <div className="faq-answer">
                     Install <code style={{ color: 'var(--brand-accent)' }}>@qratilabs/qrati-connect</code> using pnpm or npm, then import <code style={{ color: 'var(--brand-accent)' }}>QratiConnect</code> and render it inside a Client Component with your organization ID. It handles masonry layouts, responsive image loading, and lightbox interactions out of the box.
+                  </div>
+                </details>
+
+                <details className="faq-item">
+                  <summary className="faq-question">
+                    <span>How does Custom Auth work with Qrati Connect in Next.js?</span>
+                    <span className="faq-icon" aria-hidden="true">
+                      +
+                    </span>
+                  </summary>
+                  <div className="faq-answer">
+                    When your organization is configured for Custom Auth on the Qrati dashboard, the host application provides attendee identities directly. Pass <code style={{ color: 'var(--brand-accent)' }}>uid</code>, <code style={{ color: 'var(--brand-accent)' }}>fname</code>, and <code style={{ color: 'var(--brand-accent)' }}>lname</code> props to <code style={{ color: 'var(--brand-accent)' }}>QratiConnect</code>. The widget uses these credentials to attribute photo uploads, votes, and reactions to your known user.
+                  </div>
+                </details>
+
+                <details className="faq-item">
+                  <summary className="faq-question">
+                    <span>How does Custom Cloud Storage work with Qrati Connect?</span>
+                    <span className="faq-icon" aria-hidden="true">
+                      +
+                    </span>
+                  </summary>
+                  <div className="faq-answer">
+                    Organizations can connect their own AWS S3 or Cloudflare R2 bucket on the Qrati backend. Uploads are negotiated with presigned PUT URLs, so attendees upload photos directly to your cloud bucket without proxying through your Next.js server or consuming host bandwidth.
                   </div>
                 </details>
 
