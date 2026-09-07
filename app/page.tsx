@@ -1,16 +1,9 @@
 'use client';
 
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { ORGANIZATION_ID, GITHUB_ORG, REPO } from './config';
 import { showCookiePreferences } from './lib/cookieConsent';
-import {
-  subscribeAuth,
-  getAuthSnapshot,
-  getServerSnapshot,
-  login,
-  logout,
-} from './lib/auth';
 
 const QratiConnect = dynamic(() => import('@qratilabs/qrati-connect'), {
   ssr: false,
@@ -32,11 +25,6 @@ function initTheme(): 'light' | 'dark' {
 
 export default function Home() {
   const [theme, setTheme] = useState<'light' | 'dark'>(initTheme);
-  const user = useSyncExternalStore(subscribeAuth, getAuthSnapshot, getServerSnapshot);
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -50,27 +38,12 @@ export default function Home() {
     localStorage.setItem('qc-theme', next);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim() || !name.trim()) {
-      setError('Email and name are required.');
-      return;
+  const handleCookiePreferences = () => {
+    if (typeof window !== 'undefined' && (window as any).showCookiePreferences) {
+      (window as any).showCookiePreferences();
+    } else {
+      void showCookiePreferences();
     }
-    setLoading(true);
-    setError('');
-    try {
-      await login(email.trim(), name.trim());
-    } catch {
-      setError('Login failed. Try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogout = () => {
-    logout();
-    setEmail('');
-    setName('');
   };
 
   return (
@@ -78,7 +51,7 @@ export default function Home() {
       <button
         className="theme-toggle"
         onClick={toggleTheme}
-        aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+        aria-label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
       >
         {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
       </button>
@@ -86,7 +59,7 @@ export default function Home() {
       <div className="page-shell">
         <div className="page-frame">
           <header className="hero">
-            <p className="hero-kicker">Embeddable Next.js Gallery SDK</p>
+            <p className="hero-kicker">Embeddable React Gallery Component</p>
             <h1>
               <a href="https://qrati.com" target="_blank" rel="noopener noreferrer">
                 Qrati
@@ -96,8 +69,7 @@ export default function Home() {
             <p className="hero-copy">
               A drop-in React component for Next.js to embed live event photo galleries with guest
               uploads, full-screen lightbox, emoji reactions, and contest leaderboards. This example
-              showcases <strong>custom host auth</strong> with a thin login layer and{' '}
-              <strong>custom storage</strong> (direct browser-to-bucket S3/R2 uploads with bucket CORS).
+              showcases <strong>custom cloud storage</strong> (direct browser-to-bucket S3/R2 uploads with bucket CORS).
             </p>
 
             <div className="action-pills" aria-label="Example links">
@@ -147,64 +119,14 @@ export default function Home() {
           </header>
 
           <main className="content-shell">
-            {user ? (
-              <>
-                <div className="session-bar">
-                  <span>
-                    Signed in as <strong>{user.fname} {user.lname}</strong> ({user.email})
-                  </span>
-                  <button className="btn-ghost" onClick={handleLogout}>
-                    Log out
-                  </button>
-                </div>
-                <section className="widget-frame" aria-label="Interactive Next.js Event Gallery">
-                  <h2 className="sr-only">Live Event Photo Gallery Component</h2>
-                  <QratiConnect
-                    organizationId={ORGANIZATION_ID}
-                    uid={user.userId}
-                    fname={user.fname}
-                    lname={user.lname}
-                    theme={theme}
-                    router="hash"
-                  />
-                </section>
-              </>
-            ) : (
-              <div className="login-card">
-                <h2>Demo sign in</h2>
-                <p className="sub">
-                  Identify yourself to test custom host authentication with a dedicated user ID.
-                </p>
-                <form className="login-form" onSubmit={handleSubmit}>
-                  <div className="field">
-                    <label htmlFor="name">Full name</label>
-                    <input
-                      id="name"
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="John Doe"
-                      autoComplete="name"
-                    />
-                  </div>
-                  <div className="field">
-                    <label htmlFor="email">Email</label>
-                    <input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="john@example.com"
-                      autoComplete="email"
-                    />
-                  </div>
-                  {error && <p className="error">{error}</p>}
-                  <button className="btn-primary" type="submit" disabled={loading}>
-                    {loading ? 'Signing in…' : 'Sign in & load gallery'}
-                  </button>
-                </form>
-              </div>
-            )}
+            <section className="widget-frame" aria-label="Interactive Next.js Event Gallery">
+              <h2 className="sr-only">Live Event Photo Gallery Component</h2>
+              <QratiConnect
+                organizationId={ORGANIZATION_ID}
+                theme={theme}
+                router="hash"
+              />
+            </section>
 
             {/* SEO Features Section */}
             <section className="seo-section" aria-labelledby="features-heading">
@@ -226,16 +148,6 @@ export default function Home() {
                   <p>
                     Responsive masonry grid layout, blurhash loading placeholders, and full-screen
                     lightbox with keyboard navigation for stunning visual presentation.
-                  </p>
-                </article>
-
-                <article className="seo-feature-card">
-                  <div className="seo-feature-icon" aria-hidden="true">
-                    🔐
-                  </div>
-                  <h3>Custom Host Auth</h3>
-                  <p>
-                    Pass host-authenticated attendee profiles directly using <code style={{ color: 'var(--brand-accent)' }}>uid</code>, <code style={{ color: 'var(--brand-accent)' }}>fname</code>, and <code style={{ color: 'var(--brand-accent)' }}>lname</code> props without third-party redirects.
                   </p>
                 </article>
 
@@ -313,16 +225,13 @@ export default function Home() {
 // 2. Import component in your Next.js application
 import QratiConnect from '@qratilabs/qrati-connect';
 
-// 3. Render inside your layout (pass uid, fname, lname for Custom Auth)
-export function EventGallery({ user }: { user?: { id: string; fname: string; lname: string } }) {
+// 3. Render inside your page layout
+export function EventGallery() {
   return (
     <QratiConnect
       organizationId="your-organization-id"
-      uid={user?.id}       // Host user ID for Custom Auth
-      fname={user?.fname}  // Attendee first name
-      lname={user?.lname}  // Attendee last name
-      theme="light"        // 'light' | 'dark'
-      router="hash"        // 'hash' | 'memory'
+      theme="light" // 'light' | 'dark'
+      router="hash" // 'hash' | 'memory'
     />
   );
 }`}
@@ -351,18 +260,6 @@ export function EventGallery({ user }: { user?: { id: string; fname: string; lna
                   </summary>
                   <div className="faq-answer">
                     Install <code style={{ color: 'var(--brand-accent)' }}>@qratilabs/qrati-connect</code> using pnpm or npm, then import <code style={{ color: 'var(--brand-accent)' }}>QratiConnect</code> and render it inside a Client Component with your organization ID. It handles masonry layouts, responsive image loading, and lightbox interactions out of the box.
-                  </div>
-                </details>
-
-                <details className="faq-item">
-                  <summary className="faq-question">
-                    <span>How does Custom Auth work with Qrati Connect in Next.js?</span>
-                    <span className="faq-icon" aria-hidden="true">
-                      +
-                    </span>
-                  </summary>
-                  <div className="faq-answer">
-                    When your organization is configured for Custom Auth on the Qrati dashboard, the host application provides attendee identities directly. Pass <code style={{ color: 'var(--brand-accent)' }}>uid</code>, <code style={{ color: 'var(--brand-accent)' }}>fname</code>, and <code style={{ color: 'var(--brand-accent)' }}>lname</code> props to <code style={{ color: 'var(--brand-accent)' }}>QratiConnect</code>. The widget uses these credentials to attribute photo uploads, votes, and reactions to your known user.
                   </div>
                 </details>
 
@@ -419,136 +316,67 @@ export function EventGallery({ user }: { user?: { id: string; fname: string; lna
             {/* Event Hosting & Integration CTA Section */}
             <section className="seo-section seo-cta-section" aria-labelledby="cta-heading">
               <div className="seo-cta-card">
-                <div className="seo-cta-content">
-                  <span className="seo-kicker">Host on Qrati &middot; Embed Anywhere</span>
-                  <h2 id="cta-heading">
-                    Host Your Event on Qrati.{' '}
-                    <span className="cta-highlight">Stream the Live Gallery on Your Website.</span>
-                  </h2>
-                  <p className="seo-cta-copy">
-                    Planning a conference, festival, wedding, summit, or private celebration?
-                    Host your event on Qrati to capture every attendee memory with instant QR uploads,
-                    built-in moderation, and live photo contests. Then drop Qrati Connect into your own
-                    website so visitors and guests engage in real time directly on your domain.
-                  </p>
-
-                  <div className="seo-cta-steps" aria-label="How it works">
-                    <div className="cta-step">
-                      <span className="cta-step-num">1</span>
-                      <div>
-                        <strong>Host on Qrati</strong>
-                        <p>
-                          Create your event space on Qrati with QR codes, upload permissions, and
-                          branding.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="cta-step">
-                      <span className="cta-step-num">2</span>
-                      <div>
-                        <strong>Connect to Your Site</strong>
-                        <p>
-                          Embed the Next.js component or script tag into your existing website in
-                          minutes.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="cta-step">
-                      <span className="cta-step-num">3</span>
-                      <div>
-                        <strong>Engage Your Community</strong>
-                        <p>
-                          Watch guest photos, reactions, and contest leaderboards sync live on your domain.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="seo-cta-actions">
-                    <a
-                      href="https://qrati.com/contact-us"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-cta-primary"
-                    >
-                      <span>Contact Us</span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="M14 5l7 7m0 0l-7 7m7-7H3"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </a>
-                  </div>
+                <span className="seo-kicker">Host Your Event Today</span>
+                <h2 id="cta-heading">Ready to Embed Live Photos in Your Application?</h2>
+                <p>
+                  Create an account on Qrati, set up your event or organization, and start collecting
+                  stunning live photos from attendees with simple drop-in code.
+                </p>
+                <div className="seo-cta-buttons">
+                  <a
+                    href="https://qrati.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="seo-btn-primary"
+                  >
+                    <span>Get Started Free on Qrati</span>
+                    <span aria-hidden="true">→</span>
+                  </a>
+                  <a
+                    href={npmUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="seo-btn-secondary"
+                  >
+                    <span>Read SDK Documentation</span>
+                  </a>
                 </div>
               </div>
             </section>
           </main>
 
           <footer className="footer">
-            <div className="footer-brand">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://assets.qrati.com/images/qrati-connect-logo-square.png"
-                alt="Qrati Connect logo"
-                referrerPolicy="no-referrer"
-              />
-              <div>
-                <span className="footer-title">
-                  <span>Qrati</span> Connect
-                </span>
-                <p>Elevate your event experience.</p>
-              </div>
+            <p>
+              Powered by{' '}
+              <a href="https://qrati.com" target="_blank" rel="noopener noreferrer">
+                Qrati
+              </a>{' '}
+              · Embeddable live event photo galleries for Next.js applications.
+            </p>
+            <div className="footer-links">
+              <a href="https://qrati.com/privacy" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a>
+              <span className="footer-sep" aria-hidden="true">
+                ·
+              </span>
+              <a href="https://qrati.com/terms" target="_blank" rel="noopener noreferrer">
+                Terms of Service
+              </a>
+              <span className="footer-sep" aria-hidden="true">
+                ·
+              </span>
+              <button
+                type="button"
+                className="footer-cookie-btn"
+                onClick={handleCookiePreferences}
+              >
+                Cookie Preferences
+              </button>
             </div>
-            <div className="footer-meta">
-              <nav aria-label="Footer navigation">
-                <a href="https://qrati.com" target="_blank" rel="noopener noreferrer">
-                  qrati.com
-                </a>
-                <a
-                  href="https://www.npmjs.com/package/@qratilabs/qrati-connect"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  npm
-                </a>
-                <a
-                  href={`https://github.com/${GITHUB_ORG}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  GitHub
-                </a>
-                <a href="https://qrati.com/pricing" target="_blank" rel="noopener noreferrer">
-                  Pricing
-                </a>
-                <button
-                  type="button"
-                  className="footer-cookie-btn"
-                  data-cc="show-preferencesModal"
-                  onClick={() => {
-                    if (typeof window !== 'undefined' && window.showCookiePreferences) {
-                      window.showCookiePreferences();
-                    } else {
-                      void showCookiePreferences();
-                    }
-                  }}
-                >
-                  Cookie Preferences
-                </button>
-              </nav>
-              <p className="footer-note">© {year} Qrati Labs. All rights reserved.</p>
-            </div>
+            <p className="footer-copyright">
+              © {year} Qrati Labs. All rights reserved.
+            </p>
           </footer>
         </div>
       </div>
