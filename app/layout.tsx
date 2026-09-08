@@ -236,6 +236,7 @@ export default function RootLayout({
                 var t = localStorage.getItem('qc-theme') ||
                   (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
                 document.documentElement.setAttribute('data-theme', t);
+                document.documentElement.classList.toggle('dark', t === 'dark');
               } catch (e) {}
             })();`,
           }}

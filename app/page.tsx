@@ -20,6 +20,7 @@ function initTheme(): 'light' | 'dark' {
     (localStorage.getItem('qc-theme') as 'light' | 'dark') ||
     (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', t);
+  document.documentElement.classList.toggle('dark', t === 'dark');
   return t;
 }
 
@@ -28,6 +29,7 @@ export default function Home() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.classList.toggle('dark', theme === 'dark');
     localStorage.setItem('qc-theme', theme);
   }, [theme]);
 
@@ -35,6 +37,7 @@ export default function Home() {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     document.documentElement.setAttribute('data-theme', next);
+    document.documentElement.classList.toggle('dark', next === 'dark');
     localStorage.setItem('qc-theme', next);
   };
 
