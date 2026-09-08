@@ -38,14 +38,6 @@ cp .env.example .env   # optional — sensible defaults are baked in
 pnpm dev
 ```
 
-## Configuration
-
-| Variable                      | Description                                                       |
-| ----------------------------- | ----------------------------------------------------------------- |
-| `NEXT_PUBLIC_ORGANIZATION_ID` | Your Qrati organization ID                                        |
-| `NEXT_PUBLIC_GTM_ID`          | Google Tag Manager container ID (e.g. `GTM-XXXXXXX`)              |
-| `NEXT_PUBLIC_BASE_PATH`       | Base deployment path (defaults to `/connect/nextjs-example`)       |
-
 ## Other integration methods
 
 - **Web component** — `<qrati-connect>` from the CDN (see the Svelte / Solid / Qwik / Lit examples).
