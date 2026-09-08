@@ -8,7 +8,7 @@ const GTM_ENABLED = Boolean(GTM_ID && GTM_ID !== '__GTM_ID__');
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://qrati.com'),
-  title: 'Embeddable Event Photo Gallery Next.js Component | Qrati Connect',
+  title: 'Qrati Connect — Next.js Example',
   description:
     'Embed a live, interactive event photo gallery in Next.js with guest uploads, lightbox, emoji reactions, and contest leaderboards using @qratilabs/qrati-connect.',
   keywords: [
