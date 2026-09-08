@@ -1,5 +1,9 @@
 # Qrati Connect — Next.js Example
 
+[![Qrati Connect — embeddable event photo galleries](public/qrati-connect-og.png)](https://qrati.com/connect)
+
+Add an interactive event photo gallery to Next.js applications with guest uploads, lightbox viewing, emoji reactions, and contest leaderboards. [Explore Qrati Connect](https://qrati.com/connect) or [view the live Next.js example](https://qrati.com/connect/nextjs-example).
+
 Embeds [Qrati Connect](https://qrati.com) into a Next.js (App Router) app using
 the native **React component**, with a host-controlled light/dark theme and a showcase of **custom cloud storage**.
 
