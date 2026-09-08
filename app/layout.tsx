@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: '/connect/nextjs-example/favicon.svg',
+    icon: '/connect/nextjs-example/qrati-logo-square.svg',
     apple: '/connect/nextjs-example/qrati-connect-logo-square.png',
   },
   openGraph: {
