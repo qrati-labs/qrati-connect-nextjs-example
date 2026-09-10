@@ -187,7 +187,8 @@ body {
 .login-field { display: grid; gap: .4rem; color: var(--page-muted); font-size: .78rem; font-weight: 700; }
 .login-field input { width: 100%; box-sizing: border-box; padding: .75rem .85rem; border: 1px solid var(--field-border); border-radius: .7rem; background: var(--field-bg); color: var(--page-text); font: inherit; }
 .login-field input:focus { outline: 2px solid var(--brand-accent); outline-offset: 1px; }
-.login-form .btn-primary,.login-error { grid-column: 1 / -1; }
+.login-form .btn-primary { grid-column: 1 / -1; justify-self: center; }
+.login-error { grid-column: 1 / -1; }
 .btn-primary,.btn-secondary { width: max-content; padding: .75rem 1.1rem; border: 0; border-radius: 999px; font: inherit; font-size: .82rem; font-weight: 800; cursor: pointer; }
 .btn-primary { background: var(--brand-accent); color: #fff; box-shadow: 0 .6rem 1.5rem #ff480038; transition: transform 160ms ease,box-shadow 160ms ease; }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 .8rem 1.8rem #ff480052; }

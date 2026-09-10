@@ -185,9 +185,6 @@ export default function Home() {
                   <div>
                     <span className="seo-kicker">Authenticated host user</span>
                     <h2 id="login-heading">Welcome, {user.fname}</h2>
-                    <p className="login-subtitle">
-                      Qrati receives <code>{user.uid}</code> and uses it to attribute uploads, reactions, and ratings.
-                    </p>
                   </div>
                   <button className="btn-secondary" type="button" onClick={() => setUser(null)}>Sign out</button>
                 </div>
@@ -275,16 +272,6 @@ export default function Home() {
                   </p>
                 </article>
 
-                <article className="seo-feature-card">
-                  <div className="seo-feature-icon" aria-hidden="true">
-                    <iconify-icon icon="material-symbols:bolt"></iconify-icon>
-                  </div>
-                  <h3>Drop-in Next.js SDK</h3>
-                  <p>
-                    Native React component with typed props, host theme synchronization (light and dark),
-                    and seamless hash or memory routing.
-                  </p>
-                </article>
               </div>
             </section>
 
