@@ -131,6 +131,22 @@ export default function Home() {
               />
             </section>
 
+        <section class="answer-section" aria-labelledby="answer-heading">
+          <div><span class="seo-kicker">The short answer</span><h2 id="answer-heading">What does Qrati Connect add to Next.js?</h2><p>It adds a complete hosted event-media experience: guests can discover galleries, upload media, search, react, rate, and join contests while Qrati controls access, branding, and moderation.</p></div>
+          <div class="answer-points"><span>✓ One embed to maintain</span><span>✓ No gallery backend</span><span>✓ Host-controlled theme and routing</span><span>✓ Organization-controlled features</span></div>
+        </section>
+        <section class="seo-section" aria-labelledby="feature-map-heading">
+          <div class="seo-section-header"><span class="seo-kicker">Complete capability map</span><h2 id="feature-map-heading">One embed. The full event experience.</h2><p>An active Qrati subscription is required. Your organization ID selects the event space, branding, access rules, and enabled features.</p></div>
+          <div class="feature-map-grid">
+            <article class="feature-map-card"><div class="feature-map-heading"><iconify-icon icon="material-symbols:integration-instructions"></iconify-icon><h3>Embed cleanly</h3></div><p>Web component, themes, hash or memory routing, and host URL allowlists.</p></article>
+            <article class="feature-map-card"><div class="feature-map-heading"><iconify-icon icon="material-symbols:event"></iconify-icon><h3>Run the event</h3></div><p>Landing pages, folders, search, sorting, status, stats, and optional maps.</p></article>
+            <article class="feature-map-card"><div class="feature-map-heading"><iconify-icon icon="material-symbols:photo-library"></iconify-icon><h3>Show every memory</h3></div><p>Image/video layouts, lazy loading, captions, downloads, and lightbox.</p></article>
+            <article class="feature-map-card"><div class="feature-map-heading"><iconify-icon icon="material-symbols:cloud-upload"></iconify-icon><h3>Collect uploads</h3></div><p>Validation, progress, retry, cancel, HEIC conversion, crop, trim, and processing.</p></article>
+            <article class="feature-map-card"><div class="feature-map-heading"><iconify-icon icon="material-symbols:celebration"></iconify-icon><h3>Make it social</h3></div><p>Search, reactions, ratings, points, contests, and leaderboards.</p></article>
+            <article class="feature-map-card"><div class="feature-map-heading"><iconify-icon icon="material-symbols:shield-lock"></iconify-icon><h3>Keep people safe</h3></div><p>Authentication, roles, permissions, terms, moderation, and feature gates.</p></article>
+          </div>
+        </section>
+
             {/* SEO Features Section */}
             <section className="seo-section" aria-labelledby="features-heading">
               <div className="seo-section-header">
@@ -145,7 +161,7 @@ export default function Home() {
               <div className="seo-features-grid">
                 <article className="seo-feature-card">
                   <div className="seo-feature-icon" aria-hidden="true">
-                    🖼️
+                    <iconify-icon icon="material-symbols:gallery-thumbnail"></iconify-icon>
                   </div>
                   <h3>Live Event Photo Wall</h3>
                   <p>
@@ -156,7 +172,7 @@ export default function Home() {
 
                 <article className="seo-feature-card">
                   <div className="seo-feature-icon" aria-hidden="true">
-                    ☁️
+                    <iconify-icon icon="material-symbols:cloud"></iconify-icon>
                   </div>
                   <h3>Custom Cloud Storage</h3>
                   <p>
@@ -166,7 +182,7 @@ export default function Home() {
 
                 <article className="seo-feature-card">
                   <div className="seo-feature-icon" aria-hidden="true">
-                    📸
+                    <iconify-icon icon="material-symbols:photo-camera"></iconify-icon>
                   </div>
                   <h3>Guest Media Uploads</h3>
                   <p>
@@ -177,7 +193,7 @@ export default function Home() {
 
                 <article className="seo-feature-card">
                   <div className="seo-feature-icon" aria-hidden="true">
-                    ⭐
+                    <iconify-icon icon="material-symbols:star"></iconify-icon>
                   </div>
                   <h3>Reactions & Contests</h3>
                   <p>
@@ -188,7 +204,7 @@ export default function Home() {
 
                 <article className="seo-feature-card">
                   <div className="seo-feature-icon" aria-hidden="true">
-                    ⚡
+                    <iconify-icon icon="material-symbols:bolt"></iconify-icon>
                   </div>
                   <h3>Drop-in Next.js SDK</h3>
                   <p>

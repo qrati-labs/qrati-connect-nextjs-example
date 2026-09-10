@@ -225,6 +225,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://assets.qrati.com" />
         <link rel="dns-prefetch" href="https://api.qrati.com" />
+        <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" defer />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
