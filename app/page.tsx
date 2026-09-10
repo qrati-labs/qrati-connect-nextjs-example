@@ -232,7 +232,7 @@ export default function Home() {
             {featureGroups.map(([icon, title, description]) => (
               <article className="feature-map-card" key={title}>
                 <div className="feature-map-heading">
-                  <span className="feature-map-icon iconify" data-icon={`material-symbols:${icon}`} aria-hidden="true" />
+                  <iconify-icon className="feature-map-icon" icon={`material-symbols:${icon}`} aria-hidden="true" />
                   <h3>{title}</h3>
                 </div>
                 <p>{description}</p>
@@ -308,7 +308,7 @@ export default function Home() {
                   Install the package, import the component, and pass your organization ID.
                 </p>
                 <p className="org-requirement">
-                  <span className="iconify" data-icon="material-symbols:business" aria-hidden="true" />
+                  <iconify-icon icon="material-symbols:business" aria-hidden="true" />
                   You need an active Qrati subscription first. Create an organization in the Qrati dashboard;
                   its organization ID tells this embed which event space, settings, branding, and access rules to load.
                 </p>
