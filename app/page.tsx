@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { AUTH_USER, ORGANIZATION_ID, GITHUB_ORG, REPO } from './config';
+import { ORGANIZATION_ID, GITHUB_ORG, REPO } from './config';
 import { showCookiePreferences } from './lib/cookieConsent';
 
 const QratiConnect = dynamic(() => import('@qratilabs/qrati-connect'), {
@@ -14,6 +14,19 @@ const vscodeUrl = `https://vscode.dev/github/${GITHUB_ORG}/${REPO}`;
 const npmUrl = 'https://www.npmjs.com/package/@qratilabs/qrati-connect';
 const year = new Date().getFullYear();
 type CookiePreferencesWindow = Window & { showCookiePreferences?: () => void };
+
+const featureGroups = [
+  ['integration-instructions', 'Embed cleanly', 'React wrapper, Web Component support, Shadow DOM isolation, themes, hash or memory routing, and host URL allowlists.'],
+  ['event', 'Run the event', 'Public event landing pages, folders, nested folders, breadcrumbs, search, sorting, status, stats, and optional maps.'],
+  ['photo-library', 'Show every memory', 'Image and video galleries, responsive layouts, lazy loading, pagination, blurhash, captions, downloads, and PhotoSwipe.'],
+  ['cloud-upload', 'Collect uploads', 'Mobile uploads, multi-file validation, progress, retry, cancel, HEIC conversion, cropping, trimming, and processing.'],
+  ['celebration', 'Make it social', 'Keyword and facial search, image-provider search, reactions, star ratings, points, contests, and leaderboards.'],
+  ['shield-lock', 'Keep people safe', 'Custom auth, permissions, terms, moderation, and organization-controlled feature gates.'],
+  ['palette', 'Fit the brand', 'Logos, cover images, fonts, palettes, borders, shadows, responsive layouts, translations, and accessible states.'],
+  ['monitor-heart', 'Operate with confidence', 'Reliable loading, empty, error, and toast states with analytics and admin-ready review workflows.'],
+] as const;
+
+type DemoUser = { uid: string; fname: string; lname: string; email: string };
 
 function initTheme(): 'light' | 'dark' {
   if (typeof window === 'undefined') return 'light';
@@ -27,6 +40,10 @@ function initTheme(): 'light' | 'dark' {
 
 export default function Home() {
   const [theme, setTheme] = useState<'light' | 'dark'>(initTheme);
+  const [user, setUser] = useState<DemoUser | null>(null);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [loginError, setLoginError] = useState('');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -53,6 +70,21 @@ export default function Home() {
     void showCookiePreferences();
   };
 
+  const handleLogin = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const cleanName = name.trim();
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanName || !cleanEmail) {
+      setLoginError('Enter your name and email to continue.');
+      return;
+    }
+
+    const [fname, ...rest] = cleanName.split(/\s+/);
+    const uid = `nextjs-demo-${cleanEmail.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
+    setUser({ uid, fname, lname: rest.join(' '), email: cleanEmail });
+    setLoginError('');
+  };
+
   return (
     <div className="app">
       <button
@@ -66,7 +98,7 @@ export default function Home() {
       <div className="page-shell">
         <div className="page-frame">
           <header className="hero">
-            <p className="hero-kicker">Embeddable React Gallery Component</p>
+            <p className="hero-kicker">Embeddable Next.js Gallery SDK</p>
             <h1>
               <a href="https://qrati.com" target="_blank" rel="noopener noreferrer">
                 Qrati
@@ -126,17 +158,48 @@ export default function Home() {
           </header>
 
           <main className="content-shell">
-            <section className="widget-frame" aria-label="Interactive Next.js Event Gallery">
-              <h2 className="sr-only">Live Event Photo Gallery Component</h2>
-              <QratiConnect
-                organizationId={ORGANIZATION_ID}
-                uid={AUTH_USER.uid}
-                fname={AUTH_USER.fname}
-                lname={AUTH_USER.lname}
-                theme={theme}
-                router="hash"
-              />
+            <section className="login-card" aria-labelledby="login-heading">
+              {!user ? (
+                <>
+                  <span className="seo-kicker">Custom host authentication</span>
+                  <h2 id="login-heading">Sign in to open the live gallery</h2>
+                  <p className="login-subtitle">
+                    This deliberately thin demo login represents your host application&apos;s auth layer. A real
+                    Next.js app passes its signed-in user ID and name to Qrati Connect.
+                  </p>
+                  <form className="login-form" onSubmit={handleLogin}>
+                    <label className="login-field">
+                      <span>Full name</span>
+                      <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Ada Lovelace" autoComplete="name" />
+                    </label>
+                    <label className="login-field">
+                      <span>Email</span>
+                      <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="ada@example.com" autoComplete="email" />
+                    </label>
+                    {loginError ? <p className="login-error">{loginError}</p> : null}
+                    <button className="btn-primary" type="submit">Sign in &amp; load gallery</button>
+                  </form>
+                </>
+              ) : (
+                <div className="logged-in-state">
+                  <div>
+                    <span className="seo-kicker">Authenticated host user</span>
+                    <h2 id="login-heading">Welcome, {user.fname}</h2>
+                    <p className="login-subtitle">
+                      Qrati receives <code>{user.uid}</code> and uses it to attribute uploads, reactions, and ratings.
+                    </p>
+                  </div>
+                  <button className="btn-secondary" type="button" onClick={() => setUser(null)}>Sign out</button>
+                </div>
+              )}
             </section>
+
+            {user ? (
+              <section className="widget-frame" aria-label="Interactive Next.js Event Gallery">
+                <h2 className="sr-only">Live Event Photo Gallery Component</h2>
+                <QratiConnect organizationId={ORGANIZATION_ID} uid={user.uid} fname={user.fname} lname={user.lname} theme={theme} router="hash" />
+              </section>
+            ) : null}
 
         <section className="answer-section" aria-labelledby="answer-heading">
           <div><span className="seo-kicker">The short answer</span><h2 id="answer-heading">What does Qrati Connect add to Next.js?</h2><p>It adds a complete hosted event-media experience: guests can discover galleries, upload media, search, react, rate, and join contests while Qrati controls access, branding, and moderation.</p></div>
@@ -145,12 +208,15 @@ export default function Home() {
         <section className="seo-section" aria-labelledby="feature-map-heading">
           <div className="seo-section-header"><span className="seo-kicker">Complete capability map</span><h2 id="feature-map-heading">One embed. The full event experience.</h2><p>An active Qrati subscription is required. Your organization ID selects the event space, branding, access rules, and enabled features.</p></div>
           <div className="feature-map-grid">
-            <article className="feature-map-card"><div className="feature-map-heading"><iconify-icon icon="material-symbols:integration-instructions"></iconify-icon><h3>Embed cleanly</h3></div><p>Web component, themes, hash or memory routing, and host URL allowlists.</p></article>
-            <article className="feature-map-card"><div className="feature-map-heading"><iconify-icon icon="material-symbols:event"></iconify-icon><h3>Run the event</h3></div><p>Landing pages, folders, search, sorting, status, stats, and optional maps.</p></article>
-            <article className="feature-map-card"><div className="feature-map-heading"><iconify-icon icon="material-symbols:photo-library"></iconify-icon><h3>Show every memory</h3></div><p>Image/video layouts, lazy loading, captions, downloads, and lightbox.</p></article>
-            <article className="feature-map-card"><div className="feature-map-heading"><iconify-icon icon="material-symbols:cloud-upload"></iconify-icon><h3>Collect uploads</h3></div><p>Validation, progress, retry, cancel, HEIC conversion, crop, trim, and processing.</p></article>
-            <article className="feature-map-card"><div className="feature-map-heading"><iconify-icon icon="material-symbols:celebration"></iconify-icon><h3>Make it social</h3></div><p>Search, reactions, ratings, points, contests, and leaderboards.</p></article>
-            <article className="feature-map-card"><div className="feature-map-heading"><iconify-icon icon="material-symbols:shield-lock"></iconify-icon><h3>Keep people safe</h3></div><p>Authentication, roles, permissions, terms, moderation, and feature gates.</p></article>
+            {featureGroups.map(([icon, title, description]) => (
+              <article className="feature-map-card" key={title}>
+                <div className="feature-map-heading">
+                  <span className="feature-map-icon iconify" data-icon={`material-symbols:${icon}`} aria-hidden="true" />
+                  <h3>{title}</h3>
+                </div>
+                <p>{description}</p>
+              </article>
+            ))}
           </div>
         </section>
 
@@ -252,10 +318,13 @@ export default function Home() {
 import QratiConnect from '@qratilabs/qrati-connect';
 
 // 3. Render inside your page layout
-export function EventGallery() {
+export function EventGallery({ user }: { user?: { id: string; fname: string; lname: string } }) {
   return (
     <QratiConnect
       organizationId="your-organization-id"
+      uid={user?.id}       // Host user ID for Custom Auth
+      fname={user?.fname}  // Attendee first name
+      lname={user?.lname}  // Attendee last name
       theme="light" // 'light' | 'dark'
       router="hash" // 'hash' | 'memory'
     />
@@ -286,6 +355,20 @@ export function EventGallery() {
                   </summary>
                   <div className="faq-answer">
                     Install <code style={{ color: 'var(--brand-accent)' }}>@qratilabs/qrati-connect</code> using pnpm or npm, then import <code style={{ color: 'var(--brand-accent)' }}>QratiConnect</code> and render it inside a Client Component with your organization ID. It handles masonry layouts, responsive image loading, and lightbox interactions out of the box.
+                  </div>
+                </details>
+
+                <details className="faq-item">
+                  <summary className="faq-question">
+                    <span>How does Custom Auth work with Qrati Connect in Next.js?</span>
+                    <span className="faq-icon" aria-hidden="true">+</span>
+                  </summary>
+                  <div className="faq-answer">
+                    When your organization uses Custom Auth, your host app owns the login flow. Pass the signed-in
+                    user&apos;s <code style={{ color: 'var(--brand-accent)' }}>uid</code>,{' '}
+                    <code style={{ color: 'var(--brand-accent)' }}>fname</code>, and{' '}
+                    <code style={{ color: 'var(--brand-accent)' }}>lname</code> to Qrati Connect so uploads, votes, and
+                    reactions are attributed to the right person.
                   </div>
                 </details>
 

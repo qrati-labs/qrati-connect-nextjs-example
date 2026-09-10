@@ -168,6 +168,7 @@ const jsonLd = {
         'Full-screen responsive lightbox',
         'Emoji reactions with real-time feedback',
         'Contest leaderboards and star ratings',
+        'Custom host authentication with uid and attendee names',
         'Host-controlled theme synchronization (light/dark)',
         'TypeScript declarations and typed props',
       ],
@@ -176,6 +177,14 @@ const jsonLd = {
       '@type': 'FAQPage',
       '@id': 'https://qrati.com/connect/nextjs-example#faq',
       mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'How does Custom Auth work with Qrati Connect in Next.js?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'When Custom Auth is enabled for the organization, the host application owns the login flow and passes the signed-in user uid, fname, and lname to QratiConnect. Qrati uses that identity to attribute uploads, votes, and reactions.',
+          },
+        },
         {
           '@type': 'Question',
           name: 'How do I embed an event photo gallery in Next.js?',

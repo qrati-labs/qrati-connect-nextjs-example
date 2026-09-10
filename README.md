@@ -7,6 +7,14 @@ Add an interactive event photo gallery to Next.js applications with guest upload
 Embeds [Qrati Connect](https://qrati.com) into a Next.js (App Router) app using
 the native **React component**, with a host-controlled light/dark theme and a showcase of **custom cloud storage**.
 
+## Custom authentication
+
+This example includes a deliberately thin demo login form. It stands in for the
+host application's real authentication system and passes the signed-in user's
+`uid`, `fname`, and `lname` to `QratiConnect`. Replace the form with your own
+NextAuth, Clerk, Auth0, or session implementation in production; Qrati does not
+receive or manage the host password.
+
 ## Integration method: React component
 
 The widget is rendered dynamically inside a Client Component (`app/page.tsx`) with SSR disabled to ensure seamless browser custom-element registration:
@@ -21,6 +29,9 @@ const QratiConnect = dynamic(() => import('@qratilabs/qrati-connect'), {
 
 <QratiConnect
   organizationId={ORGANIZATION_ID}
+  uid={user.uid}
+  fname={user.fname}
+  lname={user.lname}
   theme={theme}
   router="hash"
 />
