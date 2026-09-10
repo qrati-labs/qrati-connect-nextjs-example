@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { ORGANIZATION_ID, GITHUB_ORG, REPO } from './config';
+import { AUTH_USER, ORGANIZATION_ID, GITHUB_ORG, REPO } from './config';
 import { showCookiePreferences } from './lib/cookieConsent';
 
 const QratiConnect = dynamic(() => import('@qratilabs/qrati-connect'), {
@@ -13,6 +13,7 @@ const repoUrl = `https://github.com/${GITHUB_ORG}/${REPO}`;
 const vscodeUrl = `https://vscode.dev/github/${GITHUB_ORG}/${REPO}`;
 const npmUrl = 'https://www.npmjs.com/package/@qratilabs/qrati-connect';
 const year = new Date().getFullYear();
+type CookiePreferencesWindow = Window & { showCookiePreferences?: () => void };
 
 function initTheme(): 'light' | 'dark' {
   if (typeof window === 'undefined') return 'light';
@@ -42,11 +43,14 @@ export default function Home() {
   };
 
   const handleCookiePreferences = () => {
-    if (typeof window !== 'undefined' && (window as any).showCookiePreferences) {
-      (window as any).showCookiePreferences();
-    } else {
-      void showCookiePreferences();
+    if (typeof window !== 'undefined') {
+      const cookieWindow = window as CookiePreferencesWindow;
+      if (cookieWindow.showCookiePreferences) {
+        cookieWindow.showCookiePreferences();
+        return;
+      }
     }
+    void showCookiePreferences();
   };
 
   return (
@@ -126,24 +130,27 @@ export default function Home() {
               <h2 className="sr-only">Live Event Photo Gallery Component</h2>
               <QratiConnect
                 organizationId={ORGANIZATION_ID}
+                uid={AUTH_USER.uid}
+                fname={AUTH_USER.fname}
+                lname={AUTH_USER.lname}
                 theme={theme}
                 router="hash"
               />
             </section>
 
-        <section class="answer-section" aria-labelledby="answer-heading">
-          <div><span class="seo-kicker">The short answer</span><h2 id="answer-heading">What does Qrati Connect add to Next.js?</h2><p>It adds a complete hosted event-media experience: guests can discover galleries, upload media, search, react, rate, and join contests while Qrati controls access, branding, and moderation.</p></div>
-          <div class="answer-points"><span>✓ One embed to maintain</span><span>✓ No gallery backend</span><span>✓ Host-controlled theme and routing</span><span>✓ Organization-controlled features</span></div>
+        <section className="answer-section" aria-labelledby="answer-heading">
+          <div><span className="seo-kicker">The short answer</span><h2 id="answer-heading">What does Qrati Connect add to Next.js?</h2><p>It adds a complete hosted event-media experience: guests can discover galleries, upload media, search, react, rate, and join contests while Qrati controls access, branding, and moderation.</p></div>
+          <div className="answer-points"><span>✓ One embed to maintain</span><span>✓ No gallery backend</span><span>✓ Host-controlled theme and routing</span><span>✓ Organization-controlled features</span></div>
         </section>
-        <section class="seo-section" aria-labelledby="feature-map-heading">
-          <div class="seo-section-header"><span class="seo-kicker">Complete capability map</span><h2 id="feature-map-heading">One embed. The full event experience.</h2><p>An active Qrati subscription is required. Your organization ID selects the event space, branding, access rules, and enabled features.</p></div>
-          <div class="feature-map-grid">
-            <article class="feature-map-card"><div class="feature-map-heading"><iconify-icon icon="material-symbols:integration-instructions"></iconify-icon><h3>Embed cleanly</h3></div><p>Web component, themes, hash or memory routing, and host URL allowlists.</p></article>
-            <article class="feature-map-card"><div class="feature-map-heading"><iconify-icon icon="material-symbols:event"></iconify-icon><h3>Run the event</h3></div><p>Landing pages, folders, search, sorting, status, stats, and optional maps.</p></article>
-            <article class="feature-map-card"><div class="feature-map-heading"><iconify-icon icon="material-symbols:photo-library"></iconify-icon><h3>Show every memory</h3></div><p>Image/video layouts, lazy loading, captions, downloads, and lightbox.</p></article>
-            <article class="feature-map-card"><div class="feature-map-heading"><iconify-icon icon="material-symbols:cloud-upload"></iconify-icon><h3>Collect uploads</h3></div><p>Validation, progress, retry, cancel, HEIC conversion, crop, trim, and processing.</p></article>
-            <article class="feature-map-card"><div class="feature-map-heading"><iconify-icon icon="material-symbols:celebration"></iconify-icon><h3>Make it social</h3></div><p>Search, reactions, ratings, points, contests, and leaderboards.</p></article>
-            <article class="feature-map-card"><div class="feature-map-heading"><iconify-icon icon="material-symbols:shield-lock"></iconify-icon><h3>Keep people safe</h3></div><p>Authentication, roles, permissions, terms, moderation, and feature gates.</p></article>
+        <section className="seo-section" aria-labelledby="feature-map-heading">
+          <div className="seo-section-header"><span className="seo-kicker">Complete capability map</span><h2 id="feature-map-heading">One embed. The full event experience.</h2><p>An active Qrati subscription is required. Your organization ID selects the event space, branding, access rules, and enabled features.</p></div>
+          <div className="feature-map-grid">
+            <article className="feature-map-card"><div className="feature-map-heading"><iconify-icon icon="material-symbols:integration-instructions"></iconify-icon><h3>Embed cleanly</h3></div><p>Web component, themes, hash or memory routing, and host URL allowlists.</p></article>
+            <article className="feature-map-card"><div className="feature-map-heading"><iconify-icon icon="material-symbols:event"></iconify-icon><h3>Run the event</h3></div><p>Landing pages, folders, search, sorting, status, stats, and optional maps.</p></article>
+            <article className="feature-map-card"><div className="feature-map-heading"><iconify-icon icon="material-symbols:photo-library"></iconify-icon><h3>Show every memory</h3></div><p>Image/video layouts, lazy loading, captions, downloads, and lightbox.</p></article>
+            <article className="feature-map-card"><div className="feature-map-heading"><iconify-icon icon="material-symbols:cloud-upload"></iconify-icon><h3>Collect uploads</h3></div><p>Validation, progress, retry, cancel, HEIC conversion, crop, trim, and processing.</p></article>
+            <article className="feature-map-card"><div className="feature-map-heading"><iconify-icon icon="material-symbols:celebration"></iconify-icon><h3>Make it social</h3></div><p>Search, reactions, ratings, points, contests, and leaderboards.</p></article>
+            <article className="feature-map-card"><div className="feature-map-heading"><iconify-icon icon="material-symbols:shield-lock"></iconify-icon><h3>Keep people safe</h3></div><p>Authentication, roles, permissions, terms, moderation, and feature gates.</p></article>
           </div>
         </section>
 
