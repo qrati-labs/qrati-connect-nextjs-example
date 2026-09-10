@@ -13,6 +13,7 @@ const repoUrl = `https://github.com/${GITHUB_ORG}/${REPO}`;
 const vscodeUrl = `https://vscode.dev/github/${GITHUB_ORG}/${REPO}`;
 const npmUrl = 'https://www.npmjs.com/package/@qratilabs/qrati-connect';
 const year = new Date().getFullYear();
+const demoUserStorageKey = 'qrati-nextjs-demo-user:v1';
 type CookiePreferencesWindow = Window & { showCookiePreferences?: () => void };
 
 const featureGroups = [
@@ -51,6 +52,18 @@ export default function Home() {
     localStorage.setItem('qc-theme', theme);
   }, [theme]);
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem(demoUserStorageKey);
+    if (!storedUser) return;
+
+    try {
+      const parsedUser = JSON.parse(storedUser) as DemoUser;
+      queueMicrotask(() => setUser(parsedUser));
+    } catch {
+      localStorage.removeItem(demoUserStorageKey);
+    }
+  }, []);
+
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
@@ -81,7 +94,9 @@ export default function Home() {
 
     const [fname, ...rest] = cleanName.split(/\s+/);
     const uid = `nextjs-demo-${cleanEmail.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
-    setUser({ uid, fname, lname: rest.join(' '), email: cleanEmail });
+    const nextUser = { uid, fname, lname: rest.join(' '), email: cleanEmail };
+    setUser(nextUser);
+    localStorage.setItem(demoUserStorageKey, JSON.stringify(nextUser));
     setLoginError('');
   };
 
@@ -186,7 +201,16 @@ export default function Home() {
                     <span className="seo-kicker">Authenticated host user</span>
                     <h2 id="login-heading">Welcome, {user.fname}</h2>
                   </div>
-                  <button className="btn-secondary" type="button" onClick={() => setUser(null)}>Sign out</button>
+                  <button
+                    className="btn-secondary"
+                    type="button"
+                    onClick={() => {
+                      setUser(null);
+                      localStorage.removeItem(demoUserStorageKey);
+                    }}
+                  >
+                    Sign out
+                  </button>
                 </div>
               )}
             </section>
@@ -282,6 +306,11 @@ export default function Home() {
                 <h2 id="quickstart-heading">Embed in 3 Simple Steps</h2>
                 <p>
                   Install the package, import the component, and pass your organization ID.
+                </p>
+                <p className="org-requirement">
+                  <span className="iconify" data-icon="material-symbols:business" aria-hidden="true" />
+                  You need an active Qrati subscription first. Create an organization in the Qrati dashboard;
+                  its organization ID tells this embed which event space, settings, branding, and access rules to load.
                 </p>
               </div>
 
