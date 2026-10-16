@@ -31,5 +31,5 @@
 
 - Run start (injected): `2026-10-16T11:43:38Z`.
 - Preflight (injected): 22 seconds; not repeated or included in audit elapsed time.
-- Audit activity began after preflight. Exact phase boundaries were not instrumented; no phase durations are asserted.
-- Total audit duration: recorded in the final delivery after PR verification; no estimate/backfill.
+- Audit activity began after preflight; exact phase boundaries were not instrumented, so no phase durations are asserted.
+- Total elapsed from injected run start to PR/check read-back: 1m 38s (`2026-10-16T11:43:38Z`–`2026-10-16T11:45:16Z`). This includes audit work and reporting; preflight's 22 seconds is excluded.
