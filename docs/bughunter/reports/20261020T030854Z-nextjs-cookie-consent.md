@@ -22,12 +22,19 @@ Two areas remain unverified rather than findings: the interaction between the la
 
 - No tests authored; there is no consent-specific test harness or test script in this example.
 - No tests, builds, lint, type-check, installs, or package managers run, per BugHunter boundary.
-- `git diff --check` is the permitted patch-hygiene check; record its actual result in the PR summary.
+- `git diff --check` passed.
 
 ## Limitations
 
 Static source review only; no browser session, network geolocation endpoint, Google Tag Manager, or consent-provider runtime was exercised. No external production test was performed.
 
-## Timing
+## Timing (measured wall-clock)
 
-Timing table and measured total will be inserted from the BugHunter timing ledger before delivery; no duration is estimated.
+| Phase | Segment start (UTC) | Segment end (UTC) | Elapsed |
+|---|---|---|---|
+| `preflight` | 2026-10-20T03:04:39Z | 2026-10-20T03:05:03Z | 00:00:25 (0.4 min) |
+| `audit` | 2026-10-20T03:05:12Z | 2026-10-20T03:09:40Z | 00:04:28 (4.5 min) |
+| **Total run (preflight start to finish)** | 2026-10-20T03:04:39Z | 2026-10-20T03:09:40Z | **00:05:01 (5.0 min)** |
+| Unclassified interval between marked phases | — | — | 00:00:08 (0.1 min) |
+
+Timer record: `/home/hermes/.hermes/cache/scratch/bughunter-timing/20261020T030439Z-90f3e49841c4416da00fd8aaa860da90.json`. Timing-table insertion itself occurs after this measurement snapshot.
