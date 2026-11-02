@@ -1,5 +1,8 @@
 # BugHunter reports
 
+| Date (UTC) | Scope | Result | Report |
+|---|---|---|---|
+| 2026-10-16 | Next.js demo sign-in identity | Low-severity email-to-UID collision; report-only | [Next.js demo login identity](reports/2026-10-16-nextjs-demo-login-identity.md) |
 | Date (UTC) | Workflow | Result | Report |
 |---|---|---|---|
 | 2026-10-20 | Next.js example cookie-consent initialization | Report-only; no confirmed defect | [Audit report](reports/20261020T030854Z-nextjs-cookie-consent.md) |
